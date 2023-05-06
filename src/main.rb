@@ -145,6 +145,7 @@ class Player
 
   def initialize
     @key_status = { left: false, up: false, right: false, down: false }
+    @touch_point = { xs: 0, ys: 0, xe: 0, ye: 0 }
   end
 
   def add_event_listener
@@ -179,6 +180,64 @@ class Player
       when 40 # 下向きキー
         @key_status[:down] = false
         e.preventDefault()
+      end
+    end
+    document.addEventListener('touchstart') do |e|
+      @touch_point[:xs] = e[:touches][0][:clientX].to_i
+      @touch_point[:ys] = e[:touches][0][:clientY].to_i
+    end
+    document.addEventListener('touchmove') do |e|
+      if (e[:touches][0][:clientX].to_i - @touch_point[:xs]).abs >= 20 || (e[:touches][0][:clientY].to_i - @touch_point[:ys]).abs >= 20
+
+        @touch_point[:xe] = e[:touches][0][:clientX].to_i
+        @touch_point[:ye] = e[:touches][0][:clientY].to_i
+        xs, ys, xe, ye = @touch_point.values
+        gesture(xs, ys, xe, ye)
+
+        @touch_point[:xs] = @touch_point[:xe]
+        @touch_point[:ys] = @touch_point[:ye]
+      end
+    end
+    document.addEventListener('touchend') do |e|
+      @key_status[:up] = false
+      @key_status[:down] = false
+      @key_status[:left] = false
+      @key_status[:right] = false
+    end
+  end
+
+  def gesture xs, ys, xe, ye
+    horizon_direction = xe - xs
+    vertical_direction = ye - ys
+    if horizon_direction.abs < vertical_direction.abs
+      # 縦方向
+      if vertical_direction < 0
+        # up
+        @key_status[:up] = true
+        @key_status[:down] = false
+        @key_status[:left] = false
+        @key_status[:right] = false
+      elsif 0 <= vertical_direction
+        # down
+        @key_status[:up] = false
+        @key_status[:down] = true
+        @key_status[:left] = false
+        @key_status[:right] = false
+      end
+    else
+      # 横方向
+      if horizon_direction < 0
+        # left
+        @key_status[:up] = false
+        @key_status[:down] = false
+        @key_status[:left] = true
+        @key_status[:right] = false
+      elsif 0 <= horizon_direction
+        # right
+        @key_status[:up] = false
+        @key_status[:down] = false
+        @key_status[:left] = false
+        @key_status[:right] = true
       end
     end
   end
