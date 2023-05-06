@@ -1,0 +1,132 @@
+:root {
+  --fab-size: 48px;
+  --bg-color: var(--light-bg);
+
+  --light-border-color: var(--light-bg-dark-shadow);
+  --text-color-disabled: var(--g-text-color-disabled-light);
+  --box-shadow-hover: 2px 2px 5px var(--light-bg-dark-shadow),-2px -2px 5px var(--light-bg-light-shadow);
+
+  --box-shadow-inset-low: inset -1px -1px 3px var(--light-bg-light-shadow),inset 1px 1px 3px var(--light-bg-dark-shadow);
+  --box-shadow-fab: 10px 10px 20px var(--light-bg-dark-shadow),-7px -7px 16px var(--light-bg-light-shadow);
+
+  --light-bg: #e4ebf5;
+  --light-bg-dark-shadow: #bec8e4;
+  --light-bg-light-shadow: #fff;
+  --dark-bg: #444;
+  --dark-bg-dark-shadow: #363636;
+  --dark-bg-light-shadow: #525252;
+  --white: #fff;
+  --black: #000;
+  --primary: #2979ff;
+  --primary-dark: #2962ff;
+  --primary-light: #82b1ff;
+  --error: #ff5252;
+  --info: #2196f3;
+  --success: #4caf50;
+  --warning: #dfa700;
+  --g-text-color-light: rgba(0,0,0,0.93);
+  --g-text-color-disabled-light: rgba(0,0,0,0.45);
+  --g-text-color-secondary-light: rgba(0,0,0,0.7);
+  --g-text-color-dark: hsla(0,0%,100%,0.93);
+  --g-text-color-disabled-dark: hsla(0,0%,100%,0.45);
+  --g-text-color-secondary-dark: hsla(0,0%,100%,0.7);
+  --g-bg-color-disabled-light: #dee5e8;
+  --g-bg-color-disabled-dark: #727272;
+  --bg-color: var(--light-bg);
+  --text-color: var(--g-text-color-light);
+  --border-color: var(--light-bg-dark-shadow);
+  --box-shadow: 3px 3px 6px var(--light-bg-dark-shadow),-3px -3px 6px var(--light-bg-light-shadow);
+  --box-shadow-2: 6px 6px 12px var(--light-bg-dark-shadow),-6px -6px 12px var(--light-bg-light-shadow);
+  --box-shadow-3: 9px 9px 18px var(--light-bg-dark-shadow),-9px -9px 18px var(--light-bg-light-shadow);
+  --box-shadow-4: 12px 12px 24px var(--light-bg-dark-shadow),-12px -12px 24px var(--light-bg-light-shadow);
+  --box-shadow-5: 15px 15px 30px var(--light-bg-dark-shadow),-15px -15px 30px var(--light-bg-light-shadow);
+  --box-shadow-inset: inset -2px -2px 5px var(--light-bg-light-shadow),inset 2px 2px 5px var(--light-bg-dark-shadow);
+  font-family: "Roboto",-apple-system,BlinkMacSystemFont,"Segoe UI","Oxygen","Ubuntu","Cantarell","Fira Sans","Droid Sans","Helvetica Neue",sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  background-color: var(--bg-color);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (max-width: 649px) {
+  .container {
+    width: 100%;
+    height: 95vh;
+  }
+}
+
+@media screen and (min-width: 650px) {
+  .container {
+    width: 650px;
+    height: 95vh;
+    margin: 0 auto;
+  }
+}
+
+main {
+  --code-bg: #f5f2f0;
+  --text-shadow: var(--light-bg-light-shadow);
+  --menu-text-color: var(--g-text-color-light);
+  --menu-text-hover-color: var(--primary-dark);
+  --text-secondary: var(--g-text-color-disabled-light);
+  --box-shadow-inset-small: inset -1px -1px 1px var(--light-bg-light-shadow),inset 1px 1px 1px var(--light-bg-dark-shadow);
+  --padding: 32px;
+  --topbar-height: 99px;
+  overflow: hidden!important;
+  padding: 24px;
+  position: relative;
+  margin: 16px 32px;
+  box-sizing: border-box;
+  font-size: 16px;
+  color: var(--text-color);
+  background: var(--bg-color);
+  background-color: var(--bg-color);
+  --bg-color: var(--light-bg);
+  --text-color: var(--g-text-color-light);
+  --border-color: var(--light-bg-dark-shadow);
+  --box-shadow: 3px 3px 6px var(--light-bg-dark-shadow),-3px -3px 6px var(--light-bg-light-shadow);
+  --box-shadow-2: 6px 6px 12px var(--light-bg-dark-shadow),-6px -6px 12px var(--light-bg-light-shadow);
+  --box-shadow-3: 9px 9px 18px var(--light-bg-dark-shadow),-9px -9px 18px var(--light-bg-light-shadow);
+  --box-shadow-4: 12px 12px 24px var(--light-bg-dark-shadow),-12px -12px 24px var(--light-bg-light-shadow);
+  --box-shadow-5: 15px 15px 30px var(--light-bg-dark-shadow),-15px -15px 30px var(--light-bg-light-shadow);
+  --box-shadow-inset: inset -2px -2px 5px var(--light-bg-light-shadow),inset 2px 2px 5px var(--light-bg-dark-shadow);
+  border-radius: 24px;
+  box-shadow: var(--box-shadow);
+  width: 300px;
+  height: 600px;
+}
+
+.stage_wrapper {
+  width: 348;
+  height: 616;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+  background: var(--bg-color);
+  background-color: var(--bg-color);
+  box-shadow: inset 7px 7px 14px var(--light-bg-dark-shadow),
+              inset -7px -7px 14px var(--light-bg-light-shadow);
+}
+
+#stage {
+  display: grid;
+  grid-template-rows: repeat(8, 1fr);
+  grid-template-columns: repeat(6, 1fr);
+}
+
+#stage span {
+  grid-row: span 1;
+  grid-column: span 1;
+  font-size: 56px;
+  width: 56px;
+  height: 75px;
+}
