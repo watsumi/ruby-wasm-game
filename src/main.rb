@@ -5,11 +5,13 @@ STAGE_COLS = 6.freeze
 FALLING_SPEED = 0.4.freeze
 
 class Game
-  attr_accessor :is_over, :stage, :mode, :pos_x, :pos_y
+  attr_accessor :is_over, :stage, :player, :mode, :pos_x, :pos_y
 
   def initialize
     @is_over = false
     @stage = Stage.new
+    @player = Player.new
+    @player.add_event_listener
     @mode = 'create_pictograph'
     @pos_x = 2
     @pos_y = 0
@@ -37,7 +39,23 @@ class Game
   end
 
   def move_pictograph
-    if @pos_y + 1 < STAGE_ROWS && stage.board[@pos_y + 1][@pos_x] == 0
+    if @player.key_status[:left] && @pos_x - 1 >= 0 && stage.board[@pos_y][@pos_x - 1] == 0
+      # 左をクリックしていて、左のマスが空いている場合は、左に移動する
+      pictograph = stage.board[@pos_y][@pos_x]
+      stage.board[@pos_y][@pos_x] = 0
+      stage.set_pic(@pos_x, @pos_y, 0)
+      stage.board[@pos_y][@pos_x - 1] = pictograph
+      stage.set_pic(@pos_x - 1, @pos_y, pictograph)
+      @pos_x -= 1
+    elsif @player.key_status[:right] && @pos_x + 1 < STAGE_COLS && stage.board[@pos_y][@pos_x + 1] == 0
+      # 右をクリックしていて、右のマスが空いている場合は、右に移動する
+      pictograph = stage.board[@pos_y][@pos_x]
+      stage.board[@pos_y][@pos_x] = 0
+      stage.set_pic(@pos_x, @pos_y, 0)
+      stage.board[@pos_y][@pos_x + 1] = pictograph
+      stage.set_pic(@pos_x + 1, @pos_y, pictograph)
+      @pos_x += 1
+    elsif @pos_y + 1 < STAGE_ROWS && stage.board[@pos_y + 1][@pos_x] == 0
       # 下のマスが空いている場合は、下に移動する
       pictograph = stage.board[@pos_y][@pos_x]
       stage.board[@pos_y][@pos_x] = 0
@@ -45,6 +63,15 @@ class Game
       stage.board[@pos_y + 1][@pos_x] = pictograph
       stage.set_pic(@pos_x, @pos_y + 1, pictograph)
       @pos_y += 1
+      if @player.key_status[:down] && @pos_y + 1 < STAGE_ROWS && stage.board[@pos_y + 1][@pos_x] == 0
+        # 下をクリックしていて、下のマスが空いている場合は、下に移動する
+        pictograph = stage.board[@pos_y][@pos_x]
+        stage.board[@pos_y][@pos_x] = 0
+        stage.set_pic(@pos_x, @pos_y, 0)
+        stage.board[@pos_y + 1][@pos_x] = pictograph
+        stage.set_pic(@pos_x, @pos_y + 1, pictograph)
+        @pos_y += 1
+      end
     else
       # 下のマスが空いていない場合は、現在の位置に固定する
       # TODO: 4つ以上の同じ絵文字がつながったら消す
@@ -110,6 +137,50 @@ class Pictograph
 
   def types
     @types ||= ['😭', '😄', '👨', '‍👩', '‍👧', '‍👦']
+  end
+end
+
+class Player
+  attr_accessor :key_status
+
+  def initialize
+    @key_status = { left: false, up: false, right: false, down: false }
+  end
+
+  def add_event_listener
+    document = JS.global[:document]
+    document.addEventListener('keydown') do |e|
+      case e[:keyCode].to_i
+      when 37 # 左向きキー
+        @key_status[:left] = true
+        e.preventDefault()
+      when 38 # 上向きキー
+        @key_status[:up] = true
+        e.preventDefault()
+      when 39 # 右向きキー
+        @key_status[:right] = true
+        e.preventDefault()
+      when 40 # 下向きキー
+        @key_status[:down] = true
+        e.preventDefault()
+      end
+    end
+    document.addEventListener('keyup') do |e|
+      case e[:keyCode].to_i
+      when 37 # 左向きキー
+        @key_status[:left] = false
+        e.preventDefault()
+      when 38 # 上向きキー
+        @key_status[:up] = false
+        e.preventDefault()
+      when 39 # 右向きキー
+        @key_status[:right] = false
+        e.preventDefault()
+      when 40 # 下向きキー
+        @key_status[:down] = false
+        e.preventDefault()
+      end
+    end
   end
 end
 
