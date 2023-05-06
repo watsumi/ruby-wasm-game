@@ -1,8 +1,8 @@
 require 'js'
 
-STAGE_ROWS = 8.freeze
+STAGE_ROWS = 12.freeze
 STAGE_COLS = 6.freeze
-FALLING_SPEED = 0.8.freeze
+FALLING_SPEED = 0.4.freeze
 
 class Game
   attr_accessor :is_over, :stage, :mode, :pos_x, :pos_y
@@ -83,6 +83,10 @@ class Stage
 
   def init_board
     [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0],

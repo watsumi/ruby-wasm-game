@@ -126,7 +126,7 @@ main {
 #stage span {
   grid-row: span 1;
   grid-column: span 1;
-  font-size: 56px;
-  width: 56px;
-  height: 75px;
+  font-size: 48px;
+  width: 48px;
+  height: 50px;
 }
