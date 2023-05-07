@@ -2,7 +2,8 @@ require 'js'
 
 STAGE_ROWS = 12.freeze
 STAGE_COLS = 6.freeze
-FALLING_SPEED = 0.4.freeze
+FALLING_SPEED = 0.3.freeze
+ERASE_PIC_COUNT = 4.freeze
 
 class Game
   attr_accessor :is_over, :stage, :player, :mode, :pos_x, :pos_y
@@ -21,24 +22,38 @@ class Game
     return if @is_over
     case @mode
     when 'create_pictograph'
-      create_pictograph
+      create
     when 'move_pictograph'
-      move_pictograph
+      move
+    when 'erase_pictograph'
+      if check_erase
+        erase
+      else
+        @mode = 'create_pictograph'
+      end
+    when 'fall_pictograph'
+      if check_fall
+        fall
+      else
+        @mode = 'erase_pictograph'
+      end
     end
     sleep(FALLING_SPEED)
     window.requestAnimationFrame(lambda { |_| loop_action })
   end
 
-  def create_pictograph
-    if stage.board[0][2] == 0
-      stage.set_pic(2, 0, Pictograph.new.type)
+  def create
+    @pos_x = 2
+    @pos_y = 0
+    if stage.board[@pos_y][@pos_x] == 0
+      stage.set_pic(@pos_x, @pos_y, Pictograph.new.type)
       @mode = 'move_pictograph'
     else
       @is_over = true
     end
   end
 
-  def move_pictograph
+  def move
     if @player.key_status[:left] && @pos_x - 1 >= 0 && stage.board[@pos_y][@pos_x - 1] == 0
       # 左をクリックしていて、左のマスが空いている場合は、左に移動する
       pictograph = stage.board[@pos_y][@pos_x]
@@ -73,12 +88,72 @@ class Game
         @pos_y += 1
       end
     else
-      # 下のマスが空いていない場合は、現在の位置に固定する
-      # TODO: 4つ以上の同じ絵文字がつながったら消す
-      @mode = 'create_pictograph'
-      @pos_x = 2
-      @pos_y = 0
+      # 下のマスが空いていない場合は、現在の位置に固定し、ピクトグラムが消せるかどうかをチェックする
+      @mode = 'erase_pictograph'
     end
+  end
+
+  def check_erase
+    @erased_pictographs = []
+    @sequence_pictographs = []
+    @existing_pictographs = []
+
+    def check_sequence(x, y)
+      origin_pictograph = stage.board[y][x]
+      return if origin_pictograph == 0
+
+      pictograph = origin_pictograph
+      @sequence_pictographs.push({ x: x, y: y, pictograph: pictograph })
+      stage.board[y][x] = 0
+
+      direction = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+      direction.each do |d|
+        next_x = x + d[0]
+        next_y = y + d[1]
+        next if next_x < 0 || next_x >= STAGE_COLS || next_y < 0 || next_y >= STAGE_ROWS
+        next_pictograph = stage.board[next_y][next_x]
+        next if next_pictograph == 0 || pictograph != next_pictograph
+        check_sequence(next_x, next_y)
+      end
+    end
+
+    0.upto(STAGE_ROWS - 1) do |y|
+      0.upto(STAGE_COLS - 1) do |x|
+        @sequence_pictographs = []
+        check_sequence(x, y)
+        if @sequence_pictographs.size < ERASE_PIC_COUNT
+          @existing_pictographs << @sequence_pictographs
+        else
+          @erased_pictographs << @sequence_pictographs
+        end
+      end
+    end
+    @existing_pictographs = @existing_pictographs.flatten.uniq
+    @existing_pictographs.each do |pic|
+      stage.board[pic[:y]][pic[:x]] = pic[:pictograph]
+    end
+
+    @erased_pictographs = @erased_pictographs.flatten.uniq
+    return @erased_pictographs.size > 0
+  end
+
+  def erase
+    @erased_pictographs.each do |pic|
+      stage.board[pic[:y]][pic[:x]] = 0
+      stage.set_pic(pic[:x], pic[:y], 0)
+    end
+    @mode = 'fall_pictograph'
+  end
+
+  def check_fall
+    is_falling = false
+    # TODO: 下のマスが空いているかどうかをチェックする
+    return is_falling
+  end
+
+  def fall
+    # TODO: 自由落下ができる場合は、自由落下させる
+    @mode = 'create_pictograph'
   end
 
   private
