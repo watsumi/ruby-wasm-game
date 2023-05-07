@@ -2,7 +2,7 @@ require 'js'
 
 STAGE_ROWS = 12.freeze
 STAGE_COLS = 6.freeze
-FALLING_SPEED = 0.3.freeze
+FALLING_SPEED = 0.2.freeze
 ERASE_PIC_COUNT = 4.freeze
 
 class Game
@@ -32,11 +32,7 @@ class Game
         @mode = 'create_pictograph'
       end
     when 'fall_pictograph'
-      if check_fall
-        fall
-      else
-        @mode = 'erase_pictograph'
-      end
+      fall
     end
     sleep(FALLING_SPEED)
     window.requestAnimationFrame(lambda { |_| loop_action })
@@ -56,35 +52,19 @@ class Game
   def move
     if @player.key_status[:left] && @pos_x - 1 >= 0 && stage.board[@pos_y][@pos_x - 1] == 0
       # 左をクリックしていて、左のマスが空いている場合は、左に移動する
-      pictograph = stage.board[@pos_y][@pos_x]
-      stage.board[@pos_y][@pos_x] = 0
-      stage.set_pic(@pos_x, @pos_y, 0)
-      stage.board[@pos_y][@pos_x - 1] = pictograph
-      stage.set_pic(@pos_x - 1, @pos_y, pictograph)
+      swap_pic(@pos_x, @pos_y, @pos_x - 1, @pos_y)
       @pos_x -= 1
     elsif @player.key_status[:right] && @pos_x + 1 < STAGE_COLS && stage.board[@pos_y][@pos_x + 1] == 0
       # 右をクリックしていて、右のマスが空いている場合は、右に移動する
-      pictograph = stage.board[@pos_y][@pos_x]
-      stage.board[@pos_y][@pos_x] = 0
-      stage.set_pic(@pos_x, @pos_y, 0)
-      stage.board[@pos_y][@pos_x + 1] = pictograph
-      stage.set_pic(@pos_x + 1, @pos_y, pictograph)
+      swap_pic(@pos_x, @pos_y, @pos_x + 1, @pos_y)
       @pos_x += 1
     elsif @pos_y + 1 < STAGE_ROWS && stage.board[@pos_y + 1][@pos_x] == 0
       # 下のマスが空いている場合は、下に移動する
-      pictograph = stage.board[@pos_y][@pos_x]
-      stage.board[@pos_y][@pos_x] = 0
-      stage.set_pic(@pos_x, @pos_y, 0)
-      stage.board[@pos_y + 1][@pos_x] = pictograph
-      stage.set_pic(@pos_x, @pos_y + 1, pictograph)
+      swap_pic(@pos_x, @pos_y, @pos_x, @pos_y + 1)
       @pos_y += 1
       if @player.key_status[:down] && @pos_y + 1 < STAGE_ROWS && stage.board[@pos_y + 1][@pos_x] == 0
         # 下をクリックしていて、下のマスが空いている場合は、下に移動する
-        pictograph = stage.board[@pos_y][@pos_x]
-        stage.board[@pos_y][@pos_x] = 0
-        stage.set_pic(@pos_x, @pos_y, 0)
-        stage.board[@pos_y + 1][@pos_x] = pictograph
-        stage.set_pic(@pos_x, @pos_y + 1, pictograph)
+        swap_pic(@pos_x, @pos_y, @pos_x, @pos_y + 1)
         @pos_y += 1
       end
     else
@@ -145,21 +125,35 @@ class Game
     @mode = 'fall_pictograph'
   end
 
-  def check_fall
-    is_falling = false
-    # TODO: 下のマスが空いているかどうかをチェックする
-    return is_falling
-  end
-
   def fall
-    # TODO: 自由落下ができる場合は、自由落下させる
-    @mode = 'create_pictograph'
+    (STAGE_ROWS - 1).downto(0) do |y|
+      0.upto(STAGE_COLS - 1) do |x|
+        next if stage.board[y][x] != 0
+        dist = pointer = y
+        # 落下地点より上にあるピクトグラムを探す
+        while dist - 1 >= 0
+          dist -= 1
+          next if stage.board[dist][x] == 0
+          swap_pic(x, dist, x, pointer)
+          pointer -= 1
+        end
+      end
+    end
+    @mode = 'erase_pictograph'
   end
 
   private
 
   def window
     @window ||= JS.global[:window]
+  end
+
+  def swap_pic(x1, y1, x2, y2)
+    pictograph = stage.board[y1][x1]
+    stage.board[y1][x1] = stage.board[y2][x2]
+    stage.board[y2][x2] = pictograph
+    stage.set_pic(x1, y1, stage.board[y1][x1])
+    stage.set_pic(x2, y2, stage.board[y2][x2])
   end
 end
 
@@ -211,7 +205,8 @@ class Pictograph
   private
 
   def types
-    @types ||= ['😭', '😄', '👨', '‍👩', '‍👧', '‍👦']
+    @types ||= ['😭', '😄']
+    # @types ||= ['😭', '😄', '😆', '😷', '🥺', '😊', '😴', '😎', '😜']
   end
 end
 
