@@ -131,3 +131,10 @@ main {
   width: 48px;
   height: 50px;
 }
+
+#loading-image {
+  position: fixed;
+  top: 50%;
+  left: 47%;
+  z-index: 10;
+}

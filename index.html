@@ -31,5 +31,11 @@
         </div>
       </main>
     </div>
+    <image src="./src/image/loading.gif" id="loading-image" alt="loading">
+    <script type="text/ruby" charset="UTF-8">
+      require "js"
+      document = JS.global[:document]    
+      document.getElementById('loading-image')[:style] = 'display: none;'
+    </script>
   </body>
 </html>
