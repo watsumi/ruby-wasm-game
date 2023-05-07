@@ -213,7 +213,7 @@ class Player
   attr_accessor :key_status
 
   def initialize
-    @key_status = { left: false, up: false, right: false, down: false }
+    @key_status = { left: false, right: false, down: false }
     @touch_point = { xs: 0, ys: 0, xe: 0, ye: 0 }
   end
 
@@ -223,9 +223,6 @@ class Player
       case e[:keyCode].to_i
       when 37 # 左向きキー
         @key_status[:left] = true
-        e.preventDefault()
-      when 38 # 上向きキー
-        @key_status[:up] = true
         e.preventDefault()
       when 39 # 右向きキー
         @key_status[:right] = true
@@ -239,9 +236,6 @@ class Player
       case e[:keyCode].to_i
       when 37 # 左向きキー
         @key_status[:left] = false
-        e.preventDefault()
-      when 38 # 上向きキー
-        @key_status[:up] = false
         e.preventDefault()
       when 39 # 右向きキー
         @key_status[:right] = false
@@ -268,7 +262,6 @@ class Player
       end
     end
     document.addEventListener('touchend') do |e|
-      @key_status[:up] = false
       @key_status[:down] = false
       @key_status[:left] = false
       @key_status[:right] = false
@@ -280,15 +273,8 @@ class Player
     vertical_direction = ye - ys
     if horizon_direction.abs < vertical_direction.abs
       # 縦方向
-      if vertical_direction < 0
-        # up
-        @key_status[:up] = true
-        @key_status[:down] = false
-        @key_status[:left] = false
-        @key_status[:right] = false
-      elsif 0 <= vertical_direction
+      if 0 <= vertical_direction
         # down
-        @key_status[:up] = false
         @key_status[:down] = true
         @key_status[:left] = false
         @key_status[:right] = false
@@ -297,13 +283,11 @@ class Player
       # 横方向
       if horizon_direction < 0
         # left
-        @key_status[:up] = false
         @key_status[:down] = false
         @key_status[:left] = true
         @key_status[:right] = false
       elsif 0 <= horizon_direction
         # right
-        @key_status[:up] = false
         @key_status[:down] = false
         @key_status[:left] = false
         @key_status[:right] = true
