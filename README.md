@@ -1,6 +1,7 @@
 # Emoji Remover 🥺
 
 ruby.wasmを使用した、落ちものパズルゲーム
+https://watsumi.github.io/ruby-wasm-game/
 
 <img width="661" alt="Screenshot 2023-05-07 at 20 46 56" src="https://user-images.githubusercontent.com/67275879/236675548-d4c5ca05-ab31-4e16-8266-e919a42ceda4.png">
 
